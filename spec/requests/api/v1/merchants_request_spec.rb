@@ -38,12 +38,12 @@ describe "Merchants API" do
       expect(attributes[:name]).to be_a(String)
     end
     
-    merchant_attributes_1 = data[0][:attributes]
-    merchant_attributes_2 = data[1][:attributes]
-    merchant_attributes_3 = data[2][:attributes]
+    merchant1_attributes = data[0][:attributes]
+    merchant2_attributes = data[1][:attributes]
+    merchant3_attributes = data[2][:attributes]
     
-    expect(merchant_attributes_1[:name]).to eq("#{@merchant1.name}")
-    expect(merchant_attributes_2[:name]).to eq("#{@merchant2.name}")
-    expect(merchant_attributes_3[:name]).to eq("#{@merchant3.name}")
+    expect(merchant1_attributes[:name]).to eq(@merchant1.name)
+    expect(merchant2_attributes[:name]).to eq(@merchant2.name)
+    expect(merchant3_attributes[:name]).to eq(@merchant3.name)
   end
 end
