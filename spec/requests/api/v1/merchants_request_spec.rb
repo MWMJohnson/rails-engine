@@ -11,6 +11,7 @@ describe "Merchants API" do
     get '/api/v1/merchants'
 
     expect(response).to be_successful
+    expect(response.status).to eq(200)
 
     merchants = JSON.parse(response.body, symbolize_names: true)
   
@@ -19,9 +20,17 @@ describe "Merchants API" do
     
     data = merchants[:data]
     expect(data).to be_an(Array)
+    expect(data.count).to eq(3)
 
     data.each do |merchant|
       expect(merchant).to be_a(Hash)
+
+      expect(merchant).to have_key(:id)
+      expect(merchant[:id]).to be_a(String)
+      
+      expect(merchant).to have_key(:type)
+      expect(merchant[:type]).to eq("merchant")
+      
       expect(merchant).to have_key(:attributes)
       attributes = merchant[:attributes]
       expect(attributes).to be_a(Hash)
@@ -29,12 +38,12 @@ describe "Merchants API" do
       expect(attributes[:name]).to be_a(String)
     end
     
-    merchant1 = data[0][:attributes]
-    merchant2 = data[1][:attributes]
-    merchant3 = data[2][:attributes]
+    merchant_attributes_1 = data[0][:attributes]
+    merchant_attributes_2 = data[1][:attributes]
+    merchant_attributes_3 = data[2][:attributes]
     
-    expect(merchant1[:name]).to eq("#{@merchant1.name}")
-    expect(merchant2[:name]).to eq("#{@merchant2.name}")
-    expect(merchant3[:name]).to eq("#{@merchant3.name}")
+    expect(merchant_attributes_1[:name]).to eq("#{@merchant1.name}")
+    expect(merchant_attributes_2[:name]).to eq("#{@merchant2.name}")
+    expect(merchant_attributes_3[:name]).to eq("#{@merchant3.name}")
   end
 end
