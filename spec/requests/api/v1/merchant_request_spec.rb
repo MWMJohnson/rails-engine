@@ -4,7 +4,6 @@ describe "Merchants API" do
   before(:each) do 
     @merchant1 = Merchant.create!(name:"Abe")
     @merchant2 = Merchant.create!(name:"Bob")
-    @merchant3 = Merchant.create!(name:"Bill")
   end
   
   it "sends one merchant in a JSON API format" do 
@@ -23,6 +22,7 @@ describe "Merchants API" do
 
     expect(data).to have_key(:id)
     expect(data[:id]).to be_a(String)
+    expect(data[:id]).to eq(@merchant1.id.to_s)
 
     expect(data).to have_key(:type)
     expect(data[:type]).to eq("merchant")
@@ -30,8 +30,9 @@ describe "Merchants API" do
     expect(data).to have_key(:attributes)
     attributes = data[:attributes]
     expect(attributes).to be_a(Hash)
-    expect(attributes).to have_key(:name)
 
+    expect(attributes).to have_key(:name)
+    expect(attributes[:name]).to be_a(String)
     expect(attributes[:name]).to eq(@merchant1.name)
 
     #not sure if needed ...
