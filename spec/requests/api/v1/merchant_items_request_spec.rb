@@ -38,7 +38,7 @@ describe "Merchants API" do
       expect(merchant_item[:id]).to be_a(String)
       
       expect(merchant_item).to have_key(:type)
-      expect(merchant_item[:type]).to eq("merchant_item")
+      expect(merchant_item[:type]).to eq("item")
       
       expect(merchant_item).to have_key(:attributes)
       attributes = merchant_item[:attributes]
@@ -87,7 +87,7 @@ describe "Merchants API" do
       expect(merchant_item[:id]).to be_a(String)
       
       expect(merchant_item).to have_key(:type)
-      expect(merchant_item[:type]).to eq("merchant_item")
+      expect(merchant_item[:type]).to eq("item")
       
       expect(merchant_item).to have_key(:attributes)
       attributes = merchant_item[:attributes]
@@ -113,4 +113,17 @@ describe "Merchants API" do
     expect(merchant_item_attributes[:unit_price]).to eq(@item_6.unit_price)
     expect(merchant_item_attributes[:merchant_id]).to eq(@item_6.merchant_id)
   end
+
+  # sad path
+
+  it "rejects request if merchant does not exist" do 
+    # require 'pry'; binding.pry
+    get "/api/v1/merchants/hello/items"
+
+    items = JSON.parse(response.body, symbolize_names: true)
+
+    expect(response).to_not be_successful
+    expect(response.status).to eq(404)
+  end
+
 end
