@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe "Merchants API" do
+describe "Merchants Endpoints" do
   before(:each) do 
     @merchant1 = Merchant.create!(name:"Abe")
     @merchant2 = Merchant.create!(name:"Bob")
@@ -125,78 +125,78 @@ describe "Merchants API" do
     end
   end
 
-  describe " GET /api/v1/merchants/:id/items" do 
+  describe " GET /api/v1/merchants/find_all" do
+    before(:each) do 
+      @merchant5 = Merchant.create!(name: "Sea World Store")
+      @merchant6 = Merchant.create!(name: "Fury Seals")
+      @merchant7 = Merchant.create!(name: "Fun by the SEA!")
+      @merchant8 = Merchant.create!(name: "Sesame seasticks l.l.p.")
+      @merchant9 = Merchant.create!(name: "Samsean Seasoning Inc.")
+    end
+
     describe "happy path" do 
-      it "returns a list of a merchant's items" do
-        get api_v1_merchant_items_path(@merchant1.id)
-    
+      it "returns merchant search results with a fragmented name search" do 
+        search_params = {
+          name: "sea"
+                      }
+        
+        get "/api/v1/merchants/find_all", params: search_params
+
         expect(response).to be_successful
         expect(response.status).to eq(200)
-    
-        items = JSON.parse(response.body, symbolize_names: true)
-      
-        expect(items).to be_a(Hash)
-        expect(items).to have_key(:data)
-        
-        data = items[:data]
+
+        resp = JSON.parse(response.body, symbolize_names: true)
+
+        data = resp[:data]
+
         expect(data).to be_an(Array)
-        expect(data.count).to eq(6)
+        expect(data.count).to eq(5)
+
+        data.each do |merchant|
+          expect(merchant).to be_a(Hash)
     
-        data.each do |merchant_item|
-          expect(merchant_item).to be_a(Hash)
-    
-          expect(merchant_item).to have_key(:id)
-          expect(merchant_item[:id]).to be_a(String)
+          expect(merchant).to have_key(:id)
+          expect(merchant[:id]).to be_a(String)
           
-          expect(merchant_item).to have_key(:type)
-          expect(merchant_item[:type]).to eq("item")
+          expect(merchant).to have_key(:type)
+          expect(merchant[:type]).to eq("merchant")
           
-          expect(merchant_item).to have_key(:attributes)
-          attributes = merchant_item[:attributes]
+          expect(merchant).to have_key(:attributes)
+          attributes = merchant[:attributes]
           expect(attributes).to be_a(Hash)
     
           expect(attributes).to have_key(:name)
           expect(attributes[:name]).to be_a(String)
-    
-          expect(attributes).to have_key(:description)
-          expect(attributes[:description]).to be_a(String)
-    
-          expect(attributes).to have_key(:unit_price)
-          expect(attributes[:unit_price]).to be_a(Float)
-    
-          expect(attributes).to have_key(:merchant_id)
-          expect(attributes[:merchant_id]).to be_an(Integer)
         end
-    
-        merchant_item1_attributes = data[0][:attributes]
-      
-        expect(merchant_item1_attributes[:name]).to eq(@item_1.name)
-        expect(merchant_item1_attributes[:description]).to eq(@item_1.description)
-        expect(merchant_item1_attributes[:unit_price]).to eq(@item_1.unit_price)
-        expect(merchant_item1_attributes[:merchant_id]).to eq(@item_1.merchant_id)
+
+        search_result1 = data[0][:attributes]
+        search_result3 = data[2][:attributes]
+        search_result5 = data[4][:attributes]
+
+        expect(search_result1[:name]).to eq(@merchant5.name)
+        expect(search_result3[:name]).to eq(@merchant7.name)
+        expect(search_result5[:name]).to eq(@merchant9.name)
       end
     end
 
-    describe 'sad path' do
-      it "rejects request if the merchant does not exists" do
-        merchant_id = 1902933094309327094537
-        get "/api/v1/merchants/#{merchant_id}/items"
+    describe "sad path" do 
+      it "accounts for no matching search results" do
+        search_params = {
+          name: "thisshouldwork"
+                      }
+        
+        get "/api/v1/merchants/find_all", params: search_params
+
+        expect(response).to be_successful
+        expect(response.status).to eq(200)
+
+        resp = JSON.parse(response.body, symbolize_names: true)
     
-        expect(response).to_not be_successful
-        expect(response.status).to eq(404)
-        expect{Merchant.find(merchant_id)}.to raise_error(ActiveRecord::RecordNotFound)
-      end
-    end
-
-    describe 'edge case' do
-      it "rejects request if user provides a String" do 
-        merchant_id = "1902933094309327094537"
-        get "/api/v1/merchants/#{merchant_id}/items"
-
-        expect(response).to_not be_successful
-        expect(response.status).to eq(404)
-        expect{Merchant.find(merchant_id)}.to raise_error(ActiveRecord::RecordNotFound)
+        expect(resp).to have_key(:data)
+  
+        expect(resp[:data]).to eq([])
       end
     end
   end
+
 end

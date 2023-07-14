@@ -9,4 +9,8 @@ class Item < ApplicationRecord
   belongs_to :merchant
   has_many :invoice_items
   has_many :invoices, through: :invoice_items
+
+  def self.find_item_by_name(fragment)
+    where("name ILIKE '%#{fragment}%'").order(:name)
+  end
 end

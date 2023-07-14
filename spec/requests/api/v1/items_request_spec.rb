@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe "Items API" do
+describe "Items Endpoints" do
   before(:each) do 
     @merchant1 = Merchant.create!(name: "Hair Care")
     @merchant2 = Merchant.create!(name: "Jewelry")
@@ -225,66 +225,6 @@ describe "Items API" do
 
     describe 'edge case' do 
       # Need Edge Case
-    end
-  end
-
-  describe 'GET /api/v1/items/:id/merchant' do 
-    describe 'happy path' do 
-      it "sends the merchant the item belongs to" do 
-        get "/api/v1/items/#{@item_1.id}/merchant"
-
-        expect(response).to be_successful
-        expect(response.status).to eq(200)
-
-        merchant = JSON.parse(response.body, symbolize_names: true)
-        
-        expect(merchant).to be_a(Hash)
-        expect(merchant).to have_key(:data)
-        expect(merchant[:data]).to be_a(Hash)
-
-        data = merchant[:data]
-
-        expect(data).to have_key(:id)
-        expect(data[:id]).to be_a(String)
-        expect(data[:id]).to eq(@item_1.merchant.id.to_s)
-
-        expect(data).to have_key(:type)
-        expect(data[:type]).to be_a(String)
-        expect(data[:type]).to eq("merchant")
-
-        expect(data).to have_key(:attributes)
-        expect(data[:attributes]).to be_a(Hash)
-
-        attributes = data[:attributes]
-
-        expect(attributes).to have_key(:name)
-        expect(attributes[:name]).to be_a(String)
-        expect(attributes[:name]).to eq(@item_1.merchant.name)
-      end
-    end
-
-    describe 'sad path' do 
-      it "rejects request if item does not exist" do 
-        item_id = 10898989898983
-
-        get "/api/v1/items/#{item_id}/merchant"
-
-        expect(response).to_not be_successful
-        expect(response.status).to eq(404)
-        expect{Item.find(item_id)}.to raise_error(ActiveRecord::RecordNotFound)
-      end
-    end
-
-    describe 'edge case' do 
-      it "rejects request if user inputs a String" do 
-        item_id = "10898989898983"
-
-        get "/api/v1/items/#{item_id}/merchant"
-
-        expect(response).to_not be_successful
-        expect(response.status).to eq(404)
-        expect{Item.find(item_id)}.to raise_error(ActiveRecord::RecordNotFound)
-      end
     end
   end
 end

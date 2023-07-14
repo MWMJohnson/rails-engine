@@ -5,11 +5,12 @@ Rails.application.routes.draw do
   # root "articles#index"
   namespace :api do
     namespace :v1 do
+      get "/items/find", to: "items/search#show"
       resources :merchants, only: [:index, :show] do 
         collection do
           get 'find_all'
         end
-        resources :items, only: [:index], controller: 'merchant/items'
+        resources :items, only: [:index], controller: 'merchants/items'
       end
       resources :items, only: [:index, :show, :create, :update, :destroy] do
         resources :merchant, only: [:index], controller: 'items/merchant'
