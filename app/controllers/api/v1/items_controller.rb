@@ -4,7 +4,12 @@ class Api::V1::ItemsController < ApplicationController
   end
 
   def show
-    render json: ItemSerializer.new(Item.find(params[:id]))
+    item = Item.find_by(id: params[:id])
+    if item.nil?
+      render(status: 404, json: { error: 'Item not found' } )
+    else
+      render json: ItemSerializer.new(item)
+    end
   end
 
   def create
