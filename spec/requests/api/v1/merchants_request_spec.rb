@@ -60,10 +60,6 @@ describe "Merchants Endpoints" do
         expect(merchant3_attributes[:name]).to eq(@merchant3.name)
       end
     end
-
-    # Q1
-    # describe "sad path" do
-    # Do we need a sad path in case the website is down? Otherwise I cannot think of another sad path to test for?
   end
 
   describe " GET /api/v1/merchant/:id" do 
@@ -96,9 +92,6 @@ describe "Merchants Endpoints" do
         expect(attributes).to have_key(:name)
         expect(attributes[:name]).to be_a(String)
         expect(attributes[:name]).to eq(@merchant1.name)
-    
-        #not sure if needed ...
-        # expect(attributes.values.include?(@merchant2.name)).to be(false)
       end
     end
 
@@ -182,7 +175,7 @@ describe "Merchants Endpoints" do
     describe "sad path" do 
       it "accounts for no matching search results" do
         search_params = {
-          name: "thisshouldwork"
+          name: "mismatch"
                       }
         
         get "/api/v1/merchants/find_all", params: search_params
@@ -198,5 +191,4 @@ describe "Merchants Endpoints" do
       end
     end
   end
-
 end

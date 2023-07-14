@@ -17,75 +17,28 @@ describe "Items::Search Endpoints" do
   end
 
   describe "GET /api/v1/items/find" do
-    describe "happy path" do
-      it "finds one item based on a name search result" do
-        search_params = {
-          name: "br"
-      }
-
-      get "/api/v1/items/find", params: search_params
-
-      expect(response).to be_successful
-      expect(response.status).to eq(200)
-
-      resp = JSON.parse(response.body, symbolize_names: true)
-
-      expect(resp.count).to eq(1)
-      expect(resp).to have_key(:data)
-      data = resp[:data]
-      expect(data).to be_a(Hash)
-      
-      expect(data).to have_key(:id)
-      expect(data[:id]).to be_a(String)
-      expect(data[:id]).to eq(@item_5.id.to_s)
-
-      expect(data).to have_key(:type)
-      expect(data[:type]).to be_a(String)
-      expect(data[:type]).to eq("item")
-
-      expect(data).to have_key(:attributes)
-      attributes = data[:attributes]
-      expect(attributes).to be_a(Hash)
-
-      expect(attributes).to have_key(:name)
-      expect(attributes[:name]).to be_a(String)
-      expect(attributes[:name]).to eq(@item_5.name)
-
-      expect(attributes).to have_key(:description)
-      expect(attributes[:description]).to be_a(String)
-      expect(attributes[:description]).to eq(@item_5.description)
-
-      expect(attributes).to have_key(:unit_price)
-      expect(attributes[:unit_price]).to be_a(Float)
-      expect(attributes[:unit_price]).to eq(@item_5.unit_price)
-
-      expect(attributes).to have_key(:merchant_id)
-      expect(attributes[:merchant_id]).to be_an(Integer)
-      expect(attributes[:merchant_id]).to eq(@item_5.merchant_id)
-      end
-    end
-
-    describe "sad path" do 
-      it "returns a null item if no match" do 
-        search_params = {
-          name: "thisshouldwork"
+    describe "finds an item based on a name search" do
+      describe "happy path" do
+        it "returns an item's details based on the name search" do
+          search_params = {
+            name: "br"
         }
-  
+
         get "/api/v1/items/find", params: search_params
-  
+
         expect(response).to be_successful
         expect(response.status).to eq(200)
-  
+
         resp = JSON.parse(response.body, symbolize_names: true)
-  
+
+        expect(resp.count).to eq(1)
         expect(resp).to have_key(:data)
         data = resp[:data]
-
         expect(data).to be_a(Hash)
-        expect(data)
-  
+        
         expect(data).to have_key(:id)
-        expect(data[:id]).to eq(nil)
+        expect(data[:id]).to be_a(String)
+        expect(data[:id]).to eq(@item_5.id.to_s)
 
         expect(data).to have_key(:type)
         expect(data[:type]).to be_a(String)
@@ -96,16 +49,79 @@ describe "Items::Search Endpoints" do
         expect(attributes).to be_a(Hash)
 
         expect(attributes).to have_key(:name)
-        expect(attributes[:name]).to eq(nil)
+        expect(attributes[:name]).to be_a(String)
+        expect(attributes[:name]).to eq(@item_5.name)
 
         expect(attributes).to have_key(:description)
-        expect(attributes[:description]).to eq(nil)
+        expect(attributes[:description]).to be_a(String)
+        expect(attributes[:description]).to eq(@item_5.description)
 
         expect(attributes).to have_key(:unit_price)
-        expect(attributes[:unit_price]).to eq(nil)
+        expect(attributes[:unit_price]).to be_a(Float)
+        expect(attributes[:unit_price]).to eq(@item_5.unit_price)
 
         expect(attributes).to have_key(:merchant_id)
-        expect(attributes[:merchant_id]).to eq(nil)
+        expect(attributes[:merchant_id]).to be_an(Integer)
+        expect(attributes[:merchant_id]).to eq(@item_5.merchant_id)
+        end
+      end
+
+      describe "sad path" do 
+        it "returns a null item if no name match" do 
+          search_params = {
+            name: "mismatch"
+          }
+    
+          get "/api/v1/items/find", params: search_params
+    
+          expect(response).to be_successful
+          expect(response.status).to eq(200)
+    
+          resp = JSON.parse(response.body, symbolize_names: true)
+    
+          expect(resp).to have_key(:data)
+          data = resp[:data]
+
+          expect(data).to be_a(Hash)
+          expect(data)
+    
+          expect(data).to have_key(:id)
+          expect(data[:id]).to eq(nil)
+
+          expect(data).to have_key(:type)
+          expect(data[:type]).to be_a(String)
+          expect(data[:type]).to eq("item")
+
+          expect(data).to have_key(:attributes)
+          attributes = data[:attributes]
+          expect(attributes).to be_a(Hash)
+
+          expect(attributes).to have_key(:name)
+          expect(attributes[:name]).to eq(nil)
+
+          expect(attributes).to have_key(:description)
+          expect(attributes[:description]).to eq(nil)
+
+          expect(attributes).to have_key(:unit_price)
+          expect(attributes[:unit_price]).to eq(nil)
+
+          expect(attributes).to have_key(:merchant_id)
+          expect(attributes[:merchant_id]).to eq(nil)
+        end
+      end
+    end
+
+    describe "finds an item based on a price search" do
+      describe "happy path" do
+        it "returns an item's details based on the name search" do
+
+        end
+      end
+      
+      describe "sad path" do
+        it " " do 
+          
+        end
       end
     end
   end
