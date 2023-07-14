@@ -5,6 +5,7 @@ Rails.application.routes.draw do
   # root "articles#index"
   namespace :api do
     namespace :v1 do
+      get "/items/find", to: "items/search#show"
       resources :merchants, only: [:index, :show] do 
         collection do
           get 'find_all'
