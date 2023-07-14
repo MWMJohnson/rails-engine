@@ -124,4 +124,79 @@ describe "Merchants Endpoints" do
       end
     end
   end
+
+  describe " GET /api/v1/merchants/find_all" do
+    before(:each) do 
+      @merchant5 = Merchant.create!(name: "Sea World Store")
+      @merchant6 = Merchant.create!(name: "Fury Seals")
+      @merchant7 = Merchant.create!(name: "Fun by the SEA!")
+      @merchant8 = Merchant.create!(name: "Sesame seasticks l.l.p.")
+      @merchant9 = Merchant.create!(name: "Samsean Seasoning Inc.")
+    end
+
+    describe "happy path" do 
+      it "returns merchant search results with a fragmented name search" do 
+        search_params = {
+          name: "sea"
+                      }
+        
+        get "/api/v1/merchants/find_all", params: search_params
+
+        expect(response).to be_successful
+        expect(response.status).to eq(200)
+
+        resp = JSON.parse(response.body, symbolize_names: true)
+
+        data = resp[:data]
+
+        expect(data).to be_an(Array)
+        expect(data.count).to eq(5)
+
+        data.each do |merchant|
+          expect(merchant).to be_a(Hash)
+    
+          expect(merchant).to have_key(:id)
+          expect(merchant[:id]).to be_a(String)
+          
+          expect(merchant).to have_key(:type)
+          expect(merchant[:type]).to eq("merchant")
+          
+          expect(merchant).to have_key(:attributes)
+          attributes = merchant[:attributes]
+          expect(attributes).to be_a(Hash)
+    
+          expect(attributes).to have_key(:name)
+          expect(attributes[:name]).to be_a(String)
+        end
+
+        search_result1 = data[0][:attributes]
+        search_result3 = data[2][:attributes]
+        search_result5 = data[4][:attributes]
+
+        expect(search_result1[:name]).to eq(@merchant5.name)
+        expect(search_result3[:name]).to eq(@merchant7.name)
+        expect(search_result5[:name]).to eq(@merchant9.name)
+      end
+    end
+
+    describe "sad path" do 
+      it "accounts for no matching search results" do
+        search_params = {
+          name: "thisshouldwork"
+                      }
+        
+        get "/api/v1/merchants/find_all", params: search_params
+
+        expect(response).to be_successful
+        expect(response.status).to eq(200)
+
+        resp = JSON.parse(response.body, symbolize_names: true)
+    
+        expect(resp).to have_key(:data)
+  
+        expect(resp[:data]).to eq([])
+      end
+    end
+  end
+
 end
