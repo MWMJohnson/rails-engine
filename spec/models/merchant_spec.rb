@@ -33,7 +33,7 @@ describe Merchant do
         expect(Merchant.find_all_merchants("Ari")).to eq([])
       end
 
-      it "returns an empty array if no matching results" do 
+      it "returns insensitive-case matching results " do 
         expect(Merchant.find_all_merchants("worl")).to eq([@merchant1, @merchant4])
       end
     end
