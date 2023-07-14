@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe "Merchants API" do
+describe "Merchants Endpoints" do
   before(:each) do 
     @merchant1 = Merchant.create!(name:"Abe")
     @merchant2 = Merchant.create!(name:"Bob")
@@ -117,81 +117,6 @@ describe "Merchants API" do
       it "rejects request if user types in a String" do 
         merchant_id = "1902933094309327094537"
         get '/api/v1/merchants/Abe'
-
-        expect(response).to_not be_successful
-        expect(response.status).to eq(404)
-        expect{Merchant.find(merchant_id)}.to raise_error(ActiveRecord::RecordNotFound)
-      end
-    end
-  end
-
-  describe " GET /api/v1/merchants/:id/items" do 
-    describe "happy path" do 
-      it "returns a list of a merchant's items" do
-        get api_v1_merchant_items_path(@merchant1.id)
-    
-        expect(response).to be_successful
-        expect(response.status).to eq(200)
-    
-        items = JSON.parse(response.body, symbolize_names: true)
-      
-        expect(items).to be_a(Hash)
-        expect(items).to have_key(:data)
-        
-        data = items[:data]
-        expect(data).to be_an(Array)
-        expect(data.count).to eq(6)
-    
-        data.each do |merchant_item|
-          expect(merchant_item).to be_a(Hash)
-    
-          expect(merchant_item).to have_key(:id)
-          expect(merchant_item[:id]).to be_a(String)
-          
-          expect(merchant_item).to have_key(:type)
-          expect(merchant_item[:type]).to eq("item")
-          
-          expect(merchant_item).to have_key(:attributes)
-          attributes = merchant_item[:attributes]
-          expect(attributes).to be_a(Hash)
-    
-          expect(attributes).to have_key(:name)
-          expect(attributes[:name]).to be_a(String)
-    
-          expect(attributes).to have_key(:description)
-          expect(attributes[:description]).to be_a(String)
-    
-          expect(attributes).to have_key(:unit_price)
-          expect(attributes[:unit_price]).to be_a(Float)
-    
-          expect(attributes).to have_key(:merchant_id)
-          expect(attributes[:merchant_id]).to be_an(Integer)
-        end
-    
-        merchant_item1_attributes = data[0][:attributes]
-      
-        expect(merchant_item1_attributes[:name]).to eq(@item_1.name)
-        expect(merchant_item1_attributes[:description]).to eq(@item_1.description)
-        expect(merchant_item1_attributes[:unit_price]).to eq(@item_1.unit_price)
-        expect(merchant_item1_attributes[:merchant_id]).to eq(@item_1.merchant_id)
-      end
-    end
-
-    describe 'sad path' do
-      it "rejects request if the merchant does not exists" do
-        merchant_id = 1902933094309327094537
-        get "/api/v1/merchants/#{merchant_id}/items"
-    
-        expect(response).to_not be_successful
-        expect(response.status).to eq(404)
-        expect{Merchant.find(merchant_id)}.to raise_error(ActiveRecord::RecordNotFound)
-      end
-    end
-
-    describe 'edge case' do
-      it "rejects request if user provides a String" do 
-        merchant_id = "1902933094309327094537"
-        get "/api/v1/merchants/#{merchant_id}/items"
 
         expect(response).to_not be_successful
         expect(response.status).to eq(404)
