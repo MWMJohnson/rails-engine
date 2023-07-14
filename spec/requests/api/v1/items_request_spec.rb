@@ -74,10 +74,6 @@ describe "Items Endpoints" do
         expect(item4_attributes[:merchant_id]).to eq(@item_4.merchant_id)
       end
     end
-
-    describe 'sad path' do 
-      #Not sure if needed, unless API website is down??
-    end
   end
 
   describe "GET /api/v1/items/:id" do 
@@ -172,14 +168,6 @@ describe "Items Endpoints" do
         expect(item_params[:merchant_id]).to eq(created_item.merchant_id)
       end
     end
-
-    describe 'sad path' do 
-      # Need Sad Path
-    end
-
-    describe 'edge case' do 
-      # Need Edge Case
-    end
   end
 
   describe 'DELETE /api/v1/items' do
@@ -191,14 +179,6 @@ describe "Items Endpoints" do
     
         expect{Item.find(item.id)}.to raise_error(ActiveRecord::RecordNotFound)
       end
-    end
-
-    describe 'sad path' do 
-      # Need Sad Path
-    end
-
-    describe 'edge case' do 
-      # Need Edge Case for invoice-items, cannot delete parents before killing the kid.
     end
   end
 
@@ -220,11 +200,21 @@ describe "Items Endpoints" do
     end
 
     describe 'sad path' do 
-      # Need Sad Path
-    end
+      it "rejects updating an item if the merchant does not exist" do
+        new_item = Item.create!(name: "Candy", description: "it's good", unit_price: 10, merchant_id: @merchant1.id)
+        new_item_id = new_item.id
+        previous_name = Item.last.name
+        invalid_merchant_id = 9090909090
+        item_params = { name: "Sweet Sweet Toothpaste", description: "it's good", unit_price: 10, merchant_id: invalid_merchant_id }
+        headers = {"CONTENT_TYPE" => "application/json"}
 
-    describe 'edge case' do 
-      # Need Edge Case
+        put api_v1_item_path(new_item_id), headers: headers, params: JSON.generate({item: item_params})
+    
+        expect(response).to_not be_successful
+        expect(response.status).to eq(404)
+        expect(Item.last.name).to eq(previous_name)
+        expect(Item.last.name).to eq("Candy")
+      end
     end
   end
 end
